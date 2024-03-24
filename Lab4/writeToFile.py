@@ -1,6 +1,6 @@
-def writePrivateKey(filename, privateKey):
-    f=open("serverPrivatekey.txt","w")
-    for item in privateKey:
+def writeKey(filename, key):
+    f=open(filename,"w")
+    for item in key:
         f.write(str(item))
         f.write("\n")
     f.close()
