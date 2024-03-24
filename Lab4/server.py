@@ -1,6 +1,8 @@
 import socket
 from writeToFile import writeKey
 from rsaModule import callable
+from rsaModule import encrypt
+from rsaModule import decrypt
 
 
 HOST = "127.0.0.1"          # Объявление адреса сервера. Данный аддрес = localhost
@@ -8,6 +10,7 @@ PORT = 8005                 # Объявление порта подключен
 
 class Server:
     def __init__(self):
+        
         public_key, private_key = callable()
         self.public_key = public_key
         self.private_key = private_key
@@ -22,9 +25,10 @@ class Server:
         conn, addr = self.socket.accept()                                       # Ожидание подключения
         self.conn = conn                                                        # Добавление переменной в объект
         self.addr = addr                                                        # Добавление переменной в объект
-
-        for item in self.public_key:
-            self.conn.send(bytes((str(item)), encoding='UTF-8'))
+        self.conn.send(bytes((str(self.public_key)), encoding='UTF-8'))
+        self.public_key_client=self.conn.recv(2048)
+        
+        self.pk=(int(self.private_key[0]),int (self.private_key[1]))
 
 
 
@@ -34,11 +38,21 @@ class Server:
     def mainloop(self):        
         # conn, addr = self.socket.accept()                                    
         data = self.conn.recv(2048)                                             # Ожидание входящего сообщения определенной длины
-        data_decoded=str(data, encoding='UTF-8')                                # Расшифровка полученного сообщения
-        print(data_decoded)                                                     # Отображение полученного сообщения в консоли сервера
-        # if(data_decoded!='exit'):   
-        #     self.conn.send(bytes('Hello from server!', encoding='UTF-8'))       # Отправка сообщения клиенту     
-
+        if data:
+            data_decoded=str(data, encoding='UTF-8')                                # Расшифровка полученного сообщения
+            # print(data_decoded)                                                     # Отображение полученного сообщения в консоли сервера
+            data_decoded=data_decoded.split()
+            data_decoded[0]=(data_decoded[0][1:-1])
+            print(data_decoded)                                                     # Отображение полученного сообщения в консоли сервера
+            for i, item in enumerate( data_decoded):
+                data_decoded[i]=int(data_decoded[i][1:-1])
+            print("Encrypted message is ", data_decoded)
+            decrypt(self.pk, data_decoded)
+            # print(decrypt(self.private_key, data_decoded))
+            # if(data_decoded!='exit'):   
+            #     self.conn.send(bytes('Hello from server!', encoding='UTF-8'))       # Отправка сообщения клиенту     
+        else:
+            return
 
     def __exit__(self, exc_type, exc_val, exc_tb):                              # Завершение работы сервера
         self.socket.shutdown(socket.SHUT_RDWR)                                  # Выключение передачи данных в сокете

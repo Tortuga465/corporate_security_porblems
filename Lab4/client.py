@@ -2,6 +2,8 @@ import socket
 
 from writeToFile import writeKey
 from rsaModule import callable
+from rsaModule import encrypt
+from rsaModule import decrypt
 
 HOST = "127.0.0.1"          # Объявление адреса сервера. Данный аддрес = localhost
 PORT = 8005                     # Объявление порта подключения
@@ -19,7 +21,12 @@ class Client:
         self.private_key = private_key
         self.server_public_key = self.socket.recv(2048)                                                     # Получение данных (сообщение) от сервера
         data_decoded=str(self.server_public_key, encoding='UTF-8')
+        data_decoded=data_decoded.split()
+        for i, item in enumerate( data_decoded):
+            data_decoded[i]=int(item[1:-1])
+        self.public_key_server=data_decoded
         print(data_decoded)
+        
         writeKey("clientPrivatekey.txt",self.private_key)
         writeKey("clientPublickey.txt",self.public_key)
         for item in self.public_key:
@@ -35,6 +42,9 @@ class Client:
         message=""                                                              # Объявление переменной сообщения, которое отправит клиент
         while True:
             message=input("Enter message to send to server ")        # Пользователь вводит сообщение, которое он хочет отправить серверу
+            message=encrypt(self.public_key_server, message)
+            print ("Encrypted message: ",message)           
+            message=message.join()
             self.socket.sendall(bytes(message, "UTF-8"))                                                      # Клиент отправляет сообщение серверу
             if message=="exit":
                 self.socket.shutdown(socket.SHUT_RDWR)

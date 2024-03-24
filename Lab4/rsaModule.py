@@ -65,6 +65,7 @@ def encrypt(pk, plaintext):
 
 def decrypt(pk, ciphertext):
     key, n = pk
+    # print (key, n)
     plain = [chr(pow(char, key, n)) for char in ciphertext]
     return ''.join(plain)
 
@@ -74,11 +75,13 @@ def callable():
     return public_key, private_key
 # print (public_key, private_key)
 
-# message = "Hello, World!"
-# print (public_key, private_key)
-# encrypted_message = encrypt(public_key, message)
-# decrypted_message = decrypt(private_key, encrypted_message)
+message = "Hello, World!"
+public_key, private_key=callable()
+encrypted_message = encrypt(public_key, message)
+decrypted_message = decrypt(private_key, encrypted_message)
 
-# print("Original message:", message)
-# print("Encrypted message:", encrypted_message)
-# print("Decrypted message:", decrypted_message)
+print("Public key: ", public_key)
+print("Private key: ", private_key)
+print("Original message:", message)
+print("Encrypted message:", encrypted_message)
+print("Decrypted message:", decrypted_message)
