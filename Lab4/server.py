@@ -1,5 +1,5 @@
 import socket
-from writeToFile import writePrivateKey
+from writeToFile import writeKey
 from rsaModule import callable
 
 
@@ -20,8 +20,9 @@ class Application:
         self.public_key = public_key
         self.private_key = private_key
         # print(self.public_key, self.private_key)
-        print(type(self.private_key))
-        writePrivateKey("serverPrivatekey.txt",self.private_key)
+        # print(type(self.private_key))
+        writeKey("serverPrivatekey.txt",self.private_key)
+        writeKey("serverPublickey.txt",self.public_key)
         for item in self.public_key:
             print(item)
             self.conn.send(bytes((str(item)), encoding='UTF-8'))
